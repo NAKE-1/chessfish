@@ -1,0 +1,361 @@
+<title>Chessfish Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column (~760px) that widens to 1040px for the diagram, the side-by-side panels and the tables. */
+:root{
+  --bg:#eef1ec; --surface:#f9fbf7; --fg:#18211b; --muted:#5a685f; --line:#cdd7ce;
+  --accent:#2c6a4d; --accent-soft:#dbe9e0; --brass:#9a6a14; --brass-soft:#f3e6c8;
+  --ok:#2e7d4f; --warn:#b07b10; --bad:#b3402e; --code-bg:#e4eae3;
+  --display:"Chakra Petch", "Bahnschrift", "Arial Narrow", sans-serif;
+  --body:"Public Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#111713; --surface:#18201b; --fg:#e2eae4; --muted:#93a399; --line:#2b3730;
+  --accent:#72c399; --accent-soft:#1f3328; --brass:#e2b45e; --brass-soft:#3a2f18;
+  --ok:#6cc58f; --warn:#e5b04a; --bad:#ec7a66; --code-bg:#1d2620; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#111713; --surface:#18201b; --fg:#e2eae4; --muted:#93a399; --line:#2b3730;
+  --accent:#72c399; --accent-soft:#1f3328; --brass:#e2b45e; --brass-soft:#3a2f18;
+  --ok:#6cc58f; --warn:#e5b04a; --bad:#ec7a66; --code-bg:#1d2620; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 72px;display:flex;flex-direction:column;gap:56px}
+.prose{max-width:760px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(2.4rem,6vw,3.6rem);font-weight:700;letter-spacing:.01em}
+h2{font-size:1.6rem;font-weight:600;margin-bottom:12px}
+h3{font-size:1.1rem;font-weight:600;margin-bottom:6px}
+p{margin:0 0 12px}
+.eyebrow{font-family:var(--mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.lede{font-size:1.15rem;color:var(--muted);max-width:62ch}
+code,.mono{font-family:var(--mono);font-size:.88em}
+:not(pre)>code{background:var(--code-bg);padding:1px 6px;border-radius:4px}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:16px;overflow-x:auto;margin:0;font-family:var(--mono);font-size:.82rem;line-height:1.55}
+header{display:flex;flex-direction:column;gap:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--mono);font-size:.8rem;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;font-variant-numeric:tabular-nums}
+.chip b{color:var(--accent);font-weight:500}
+.chip.brass b{color:var(--brass)}
+
+.diagram{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:12px}
+.diagram svg{display:block;min-width:760px;width:100%;height:auto}
+svg .box{fill:var(--bg);stroke:var(--line);stroke-width:1.5}
+svg .box.pc{stroke:var(--brass)} svg .box.vm{stroke:var(--accent)}
+svg .inner{fill:var(--surface);stroke:var(--line)}
+svg .t{fill:var(--fg);font-family:var(--body);font-size:13px}
+svg .th{fill:var(--fg);font-family:var(--display);font-size:17px;font-weight:600}
+svg .tm{fill:var(--muted);font-family:var(--mono);font-size:11px}
+svg .ta{fill:var(--accent);font-family:var(--mono);font-size:12px}
+svg .tb{fill:var(--brass);font-family:var(--mono);font-size:12px}
+svg .tx{fill:var(--bad);font-family:var(--mono);font-size:11px}
+svg .wire-a{stroke:var(--accent);stroke-width:2.5;fill:none}
+svg .wire-b{stroke:var(--brass);stroke-width:2.5;fill:none}
+svg .wire-x{stroke:var(--bad);stroke-width:1.5;stroke-dasharray:5 4;fill:none}
+svg .head-a{fill:var(--accent)} svg .head-b{fill:var(--brass)} svg .head-x{fill:var(--bad)}
+svg .tailnet{fill:none;stroke:var(--muted);stroke-dasharray:3 5;stroke-width:1.2}
+
+ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0;counter-reset:s}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:44px 1fr;gap:14px;padding:14px 0;border-top:1px solid var(--line)}
+ol.steps li::before{content:counter(s);font-family:var(--display);font-weight:700;font-size:1.4rem;color:var(--accent);line-height:1.2}
+ol.steps li>div{min-width:0}
+ol.steps strong{display:block;font-weight:600}
+
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;min-width:0}
+.panel.friend{border-top:4px solid var(--accent)}
+.panel.host{border-top:4px solid var(--brass)}
+.panel ul{margin:8px 0 0;padding-left:18px}
+.panel li{margin-bottom:4px}
+.panel .who{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.no{color:var(--muted)}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:24px 28px}
+.stats div{min-width:0}
+.stats h3{color:var(--brass)}
+.stats ul{margin:0;padding-left:18px;color:var(--fg)}
+.stats li{margin-bottom:3px}
+
+.states{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 18px}
+.st{font-family:var(--mono);font-size:.8rem;padding:6px 12px;border-radius:6px;border:1px solid var(--line);background:var(--surface)}
+.st.ok{color:var(--ok);border-color:var(--ok)} .st.warn{color:var(--warn);border-color:var(--warn)}
+.st.bad{color:var(--bad);border-color:var(--bad)}
+.arrow{color:var(--muted);font-family:var(--mono);font-size:.75rem}
+
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;align-items:start}
+.two>div{min-width:0}
+
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:560px;background:var(--surface)}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+tr:last-child td{border-bottom:none}
+
+.callout{border-left:3px solid var(--brass);background:var(--brass-soft);padding:12px 16px;border-radius:0 8px 8px 0}
+.qs{margin:0;padding-left:20px}
+.qs li{margin-bottom:6px}
+footer{color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:16px}
+@media (prefers-reduced-motion:no-preference){ .wire-a,.wire-b{stroke-dasharray:10 6;animation:flow 1.6s linear infinite} @keyframes flow{to{stroke-dashoffset:-16}} }
+</style>
+
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">Plan · v1 · 20 Oct 2026</span>
+  <h1>Chessfish</h1>
+  <p class="lede">Stockfish runs on the gaming PC. A small chess website runs in Docker on the Proxmox VM. A friend outside your tailnet plays on that website through a Tailscale share, and the gaming PC shows every statistic about the game.</p>
+  <div class="chips">
+    <span class="chip">friend site <b>:6767</b></span>
+    <span class="chip">host link <b>:6768</b></span>
+    <span class="chip brass">local dashboard <b>127.0.0.1:6769</b></span>
+    <span class="chip">friend sees <b>Opponent</b></span>
+    <span class="chip brass">ships as <b>ChessfishSetup.exe</b></span>
+    <span class="chip">grace <b>60 s</b></span>
+  </div>
+</header>
+
+<section>
+  <div class="prose">
+    <h2>How it fits together</h2>
+    <p>The gaming PC always dials out to the container, so the container never needs a way back in. The friend's browser only ever talks to the container. The container also holds the rules, so a dropped PC or a tampered browser cannot corrupt the game.</p>
+  </div>
+  <div class="diagram" role="img" aria-label="Diagram: the gaming PC connects to the Docker container on port 6768 with an encrypted link. The friend connects to port 6767 through the existing Tailscale share.">
+    <svg viewBox="0 0 980 400" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="ha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="head-a"/></marker>
+        <marker id="hb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="head-b"/></marker>
+        <marker id="hx" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="head-x"/></marker>
+      </defs>
+      <rect x="10" y="20" width="640" height="370" rx="14" class="tailnet"/>
+      <text x="26" y="42" class="tm">YOUR TAILNET (WireGuard-encrypted)</text>
+
+      <!-- Gaming PC -->
+      <rect x="30" y="60" width="250" height="300" rx="10" class="box pc"/>
+      <text x="48" y="90" class="th">Gaming PC</text>
+      <text x="48" y="108" class="tm">Windows · Chessfish (PySide6)</text>
+      <rect x="48" y="122" width="214" height="44" rx="6" class="inner"/>
+      <text x="60" y="142" class="t">Stockfish (UCI)</text>
+      <text x="60" y="158" class="tm">Threads · Hash · MultiPV</text>
+      <rect x="48" y="174" width="214" height="44" rx="6" class="inner"/>
+      <text x="60" y="194" class="t">Stats engine + GUI</text>
+      <text x="60" y="210" class="tm">eval · WDL · probable moves</text>
+      <rect x="48" y="226" width="214" height="44" rx="6" class="inner"/>
+      <text x="60" y="246" class="t">Link worker</text>
+      <text x="60" y="262" class="tm">handshake · heartbeat · resume</text>
+      <rect x="48" y="278" width="214" height="44" rx="6" class="inner"/>
+      <text x="60" y="298" class="t">Web dashboard (optional)</text>
+      <text x="60" y="314" class="tb">127.0.0.1:6769</text>
+
+      <!-- VM -->
+      <rect x="380" y="60" width="250" height="300" rx="10" class="box vm"/>
+      <text x="398" y="90" class="th">Proxmox VM</text>
+      <text x="398" y="108" class="tm">Tailscale on VM · Docker</text>
+      <rect x="398" y="122" width="214" height="148" rx="6" class="inner"/>
+      <text x="410" y="142" class="t">chessfish-server</text>
+      <text x="410" y="160" class="tm">FastAPI + python-chess</text>
+      <text x="410" y="178" class="tm">rules · clocks · chat</text>
+      <text x="410" y="196" class="tm">SQLite: adjourned game only</text>
+      <text x="410" y="222" class="ta">:6767 website + /play</text>
+      <text x="410" y="242" class="tb">:6768 /link (host only)</text>
+      <rect x="398" y="290" width="214" height="44" rx="6" class="inner"/>
+      <text x="410" y="310" class="t">docker compose up -d</text>
+      <text x="410" y="326" class="tm">.env: CHESSFISH_PSK</text>
+
+      <!-- Friend -->
+      <rect x="730" y="120" width="230" height="160" rx="10" class="box"/>
+      <text x="748" y="150" class="th">Friend</text>
+      <text x="748" y="168" class="tm">outside your tailnet</text>
+      <text x="748" y="196" class="t">Browser: board, sounds,</text>
+      <text x="748" y="214" class="t">moves, clocks, chat,</text>
+      <text x="748" y="232" class="t">ping badge</text>
+      <text x="748" y="260" class="tm">via Tailscale node share</text>
+
+      <!-- wires -->
+      <path d="M262,248 C320,248 330,240 396,240" class="wire-b" marker-end="url(#hb)"/>
+      <text x="290" y="232" class="tb">encrypted</text>
+      <text x="290" y="270" class="tm">PSK + X25519</text>
+      <path d="M728,210 C680,210 660,220 614,220" class="wire-a" marker-end="url(#ha)"/>
+      <text x="652" y="200" class="ta">HTTP/WS</text>
+    </svg>
+  </div>
+</section>
+
+<section class="prose">
+  <h2>A session, start to finish</h2>
+  <ol class="steps">
+    <li><div><strong>Install and pair once</strong>Run <code>ChessfishSetup.exe</code> on the gaming PC. Its wizard picks a Stockfish build, enters the server address and generates a 32-byte pairing key, which you paste into the container's <code>.env</code>. The key itself never travels over the wire.</div></li>
+    <li><div><strong>Pick the game</strong>In the GUI you choose the mode (friend vs Stockfish, or friend vs you), your colour, the time control and the engine Elo. Meanwhile your friend has entered a display name and sees "Waiting for game".</div></li>
+    <li><div><strong>Handshake</strong>The PC sends <code>HELLO</code> with a fresh ephemeral X25519 key, a timestamp and a nonce, signed with the pairing key. The server answers <code>WELCOME</code> the same way. Each side derives one-off session keys and throws the ephemeral keys away afterwards.</div></li>
+    <li><div><strong>Encrypted startup packet</strong>The first sealed frame is <code>START</code>, built on the spot from your settings: the session id, resume token, mode, clocks, engine settings, heartbeat timings and grace period. The server acknowledges it and the friend's page starts a countdown, then shows the board.</div></li>
+    <li><div><strong>Play</strong>Every move goes to the server, and python-chess checks it before anything changes. In engine mode Stockfish's reply comes from the PC after a human-like think time. In human mode you move on the Chessfish board. Either way the friend sees the same "Opponent", and your PC analyses throughout.</div></li>
+    <li><div><strong>Heartbeat</strong>Each side sends a <code>PING</code> every 2 s. RTT, jitter and loss are logged for both legs (PC to server and server to friend).</div></li>
+    <li><div><strong>End or adjourn</strong>Mate, resignation, a draw or a flag fall ends the game. The PGN, annotated with evals, move grades and clock times, is saved on your PC. The server keeps nothing.</div></li>
+  </ol>
+</section>
+
+<section>
+  <div class="prose"><h2>Drop-outs</h2>
+  <p>Clocks run on the server, so a lost link pauses the game instead of costing either player time.</p></div>
+  <div class="states">
+    <span class="st ok">ok</span><span class="arrow">no pong 5 s →</span>
+    <span class="st warn">degraded</span><span class="arrow">8 s →</span>
+    <span class="st bad">lost · clocks frozen</span><span class="arrow">60 s grace →</span>
+    <span class="st">adjourned · saved</span>
+  </div>
+  <div class="two">
+    <div class="prose">
+      <p><strong>Host drops.</strong> The friend sees <em>"Host connection lost, reconnecting… 0:52"</em>. Chessfish retries with backoff (0.5 s, 1 s, 2 s and so on, capped at 10 s). It then sends a new handshake plus <code>RESUME</code> with the session's resume token, and the exact position and clocks come back.</p>
+      <p><strong>Friend drops.</strong> The game holds and the same grace rules apply. You see "Friend disconnected" with the timer.</p>
+      <p><strong>Grace runs out.</strong> The game is adjourned and saved to SQLite, and you can resume it later from the GUI.</p>
+    </div>
+<pre>{ "type": "START",
+  "session_id": "6f1c…",
+  "resume_token": "b64…",
+  "mode": "engine",
+  "host_color": "random",
+  "time_control": { "initial_s": 600,
+                    "increment_s": 5 },
+  "engine": { "elo": 1800,
+              "humanize": true,
+              "min_ms": 800, "max_ms": 20000 },
+  "countdown_s": 10,
+  "heartbeat": { "interval_ms": 2000,
+                 "degraded_after_ms": 5000,
+                 "lost_after_ms": 8000 },
+  "grace_s": 60,
+  "friend_view": { "show_ping": true,
+                   "chat": true } }</pre>
+  </div>
+</section>
+
+<section>
+  <div class="prose"><h2>Who sees what</h2></div>
+  <div class="split">
+    <div class="panel friend">
+      <span class="who">Friend · browser on :6767</span>
+      <h3>A clean online-chess page</h3>
+      <ul>
+        <li>Enters a display name, then sees "Waiting for game" until a countdown starts the game</li>
+        <li>The other side is always shown as "Opponent"</li>
+        <li>Board with drag or click moves, legal-move dots, last-move and check highlights</li>
+        <li>Promotion picker and board flip</li>
+        <li>Sounds for move, capture, check, castle, game start/end and low time</li>
+        <li>Move list in SAN and both clocks</li>
+        <li>Resign, plus offer or accept a draw</li>
+        <li>Chat</li>
+        <li>Ping badge and banners: waiting, reconnecting, adjourned</li>
+        <li class="no">No evals, best moves, settings or rematch buttons, and nothing that says engine or human</li>
+      </ul>
+    </div>
+    <div class="panel host">
+      <span class="who">You · Chessfish on the gaming PC</span>
+      <h3>Everything, in a multithreaded GUI</h3>
+      <ul>
+        <li>Settings: server IP/port, pairing key, Stockfish path, Threads, Hash, MultiPV</li>
+        <li>Session control: start, pause, adjourn, abort, resume an adjourned game</li>
+        <li>The live board, where you play in human mode</li>
+        <li>All statistics (below), plus link health for both legs</li>
+        <li>Optional browser dashboard on the same PC</li>
+      </ul>
+      <p class="no" style="margin-top:10px">Threads: UI · engine · link · stats · dashboard. They talk through Qt signals, so analysis never freezes the window.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="prose"><h2>The statistics</h2>
+  <p>Stockfish streams these while it searches, and Chessfish derives the rest after every move.</p></div>
+  <div class="stats">
+    <div><h3>Engine, live</h3><ul>
+      <li>Eval in centipawns or mate-in-N</li><li>Win / draw / loss %</li><li>Depth and seldepth</li>
+      <li>Nodes, NPS, hash fill, tablebase hits</li><li>Principal variation for every MultiPV line</li></ul></div>
+    <div><h3>Probable moves</h3><ul>
+      <li>Top-N candidates for both sides</li><li>Probability spread across the candidates</li>
+      <li>Predicted reply from the friend</li><li>Eval swing per candidate</li><li>Threats if the side to move passes</li></ul></div>
+    <div><h3>Game</h3><ul>
+      <li>Eval graph over the game</li><li>Centipawn loss and accuracy % per player</li>
+      <li>Move grades: best, excellent, good, inaccuracy, mistake, blunder</li>
+      <li>Opening (ECO code and name) and game phase</li><li>Material, mobility, hanging pieces, king safety</li></ul></div>
+    <div><h3>Time and network</h3><ul>
+      <li>Think time per move and clock usage curves</li><li>RTT, jitter and loss for both legs</li>
+      <li>Link state history and reconnect log</li><li>Packet counters and session info</li></ul></div>
+  </div>
+</section>
+
+<section>
+  <div class="prose">
+    <h2>Engine or human? The friend can't tell</h2>
+    <p>The friend's page gets exactly the same messages in both modes, and no engine name or mode ever reaches it. Stockfish waits a human-like amount of time before each move, scaled by the clock, the increment, the move number and how complicated the position is. Forced moves and recaptures come quicker. Strength is capped by the Elo setting, and chat reaches you in both modes.</p>
+  </div>
+</section>
+
+<section class="two">
+  <div class="prose">
+    <h2>The installer</h2>
+    <p>The gaming-PC side is a single <code>ChessfishSetup.exe</code> you can hand to another machine. Nothing needs to be installed there first: Python and Stockfish come inside it.</p>
+    <p>By default it installs into the folder you run it from. You can pick another location, and choose between installing just for you (no admin prompt) or for all users. Settings, logs and saved games stay inside the install folder.</p>
+    <p>It needs no firewall rules, because Chessfish only connects out. Your Tailscale setup stays exactly as it is. The link port is protected by the pairing-key handshake, so anything without the key is dropped before it sees a game.</p>
+  </div>
+  <div class="panel host">
+    <span class="who">First-run wizard</span>
+    <ol class="steps">
+      <li><div><strong>Stockfish</strong>Detects CPU features (AVX-512, BMI2, AVX2…), picks the matching bundled build and runs <code>bench</code> to prove it works.</div></li>
+      <li><div><strong>Hardware</strong>Detects cores and RAM, then suggests Threads = cores − 1 and Hash = 25% of RAM (up to 4 GB).</div></li>
+      <li><div><strong>Server</strong>Enter the container address and port 6768, then use Test connection to see the handshake and RTT.</div></li>
+      <li><div><strong>Pairing key</strong>Generate one or paste an existing one. It is stored with Windows DPAPI.</div></li>
+      <li><div><strong>Docker files</strong>Writes a ready <code>docker-compose.yml</code> and an <code>.env</code> with the key filled in. Copy both to the VM and run <code>docker compose up -d</code>.</div></li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <div class="prose">
+    <h2>Stack</h2>
+    <p>Stockfish only plays and analyses. It does not enforce the rules of chess; python-chess does that on the server.</p>
+  </div>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Part</th><th>Runs on</th><th>Built with</th></tr></thead>
+    <tbody>
+      <tr><td>Chessfish GUI</td><td>Gaming PC</td><td>Python 3.12, PySide6, pyqtgraph, python-chess (UCI)</td></tr>
+      <tr><td>Installer</td><td>Built once, run on the gaming PC</td><td>PyInstaller (onedir) and Inno Setup, plus <code>build.ps1</code>, which pulls a pinned Stockfish release and checks its checksums</td></tr>
+      <tr><td>Local dashboard</td><td>Gaming PC</td><td>FastAPI on 127.0.0.1:6769, off by default</td></tr>
+      <tr><td>Link and crypto</td><td>Both</td><td>Shared <code>chessfish_proto</code> package: websockets, cryptography (X25519, HKDF, ChaCha20-Poly1305), pydantic</td></tr>
+      <tr><td>chessfish-server</td><td>Docker on VM</td><td>FastAPI, uvicorn, python-chess, SQLite, docker-compose</td></tr>
+      <tr><td>Friend website</td><td>Served by the container</td><td>chessground board, plain JS, own or CC0 sound files</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="prose">
+  <h2>Build order</h2>
+  <ol class="steps">
+    <li><div><strong>Protocol and crypto</strong>Handshake, sealed frames and replay guard, all with unit tests.</div></li>
+    <li><div><strong>Server core</strong>Game state, clocks, friend socket, host link and storage, tested against a fake host.</div></li>
+    <li><div><strong>Friend website</strong>Board, dots, sounds, move list, clocks, chat and status banners.</div></li>
+    <li><div><strong>Link client</strong>Connect, heartbeat, reconnect and resume, first as a command-line harness.</div></li>
+    <li><div><strong>Chessfish GUI</strong>Settings, session control, board, and the engine worker for both modes.</div></li>
+    <li><div><strong>Statistics</strong>Every metric above, with graphs.</div></li>
+    <li><div><strong>Local web dashboard</strong></div></li>
+    <li><div><strong>Installer</strong>The PyInstaller build, the Inno Setup script and the first-run wizard.</div></li>
+    <li><div><strong>Deploy and test</strong>Run <code>docker compose up -d</code> on the VM and install on the gaming PC. Then test end to end, including pulling the network cable mid-game.</div></li>
+  </ol>
+</section>
+
+<section class="prose">
+  <h2>Settled</h2>
+  <ul class="qs">
+    <li>Ports: 6767 for the friend site, 6768 for the link.</li>
+    <li>Tailscale settings are never touched.</li>
+    <li>The friend enters a display name and only ever sees "Opponent".</li>
+    <li>No rematch buttons. The friend waits, then gets a 10-second countdown.</li>
+    <li>Games are saved as PGNs on the gaming PC only.</li>
+    <li>The installer covers the gaming PC and writes the Docker files.</li>
+    <li>Install location defaults to where the setup runs, and can be changed, per user or for all users.</li>
+  </ul>
+</section>
+
+<footer>Source of truth: <code>CLAUDE.md</code>, <code>PLAN.md</code>, <code>PROTOCOL.md</code>, <code>DECISIONS.md</code> and <code>OPEN_QUESTIONS.md</code> in the chessfish folder.</footer>
+</div>
