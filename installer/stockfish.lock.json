@@ -1,0 +1,9 @@
+{
+  "release": "sf_19",
+  "source": "https://github.com/official-stockfish/Stockfish/tree/sf_19",
+  "asset": "stockfish-windows-x86-64-universal.zip",
+  "url": "https://github.com/official-stockfish/Stockfish/releases/download/sf_19/stockfish-windows-x86-64-universal.zip",
+  "sha256": "3c8bf1f9ea66a09350a40df4f632288285ac206d99f33ab5842c408fc30b48a7",
+  "exe_in_zip": "stockfish/stockfish-windows-x86-64-universal.exe",
+  "license_in_zip": "stockfish/Copying.txt"
+}

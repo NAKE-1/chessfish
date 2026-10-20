@@ -69,3 +69,5 @@ Format: date — decision — why / source.
 36. **Engine-mode draw offers** are answered automatically after 2–6 s: accept only from move 15 on and when the engine is not
     better (host-POV eval ≤ +0.30). Human mode shows the host a Yes/No prompt. *Claude.*
 37. **Threat** = depth-10 search with the side to move "passing" (turn flipped, not a null move in history). *Claude.*
+38. **Windowed exe fix:** `sys.stdout/stderr` are None without a console; `__main__` points them at devnull (uvicorn's
+    logging crashed on `.isatty()`; the user spotted the error dialog). `build.ps1` runs `--selftest` in a real windowed process. *Claude.*
