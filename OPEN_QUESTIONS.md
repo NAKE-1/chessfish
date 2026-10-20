@@ -5,4 +5,4 @@
 - **Installer acceptance still open:** an all-users install and a run on a clean Windows user/VM (only per-user was tested here).
 
 ## Resolved
-See DECISIONS.md 1–39.
+See DECISIONS.md 1–43.
