@@ -71,3 +71,6 @@ Format: date — decision — why / source.
 37. **Threat** = depth-10 search with the side to move "passing" (turn flipped, not a null move in history). *Claude.*
 38. **Windowed exe fix:** `sys.stdout/stderr` are None without a console; `__main__` points them at devnull (uvicorn's
     logging crashed on `.isatty()`; the user spotted the error dialog). `build.ps1` runs `--selftest` in a real windowed process. *Claude.*
+39. **Inno Setup 6 installed via winget** (user approved). `installer\build.ps1` now produces `build\installer\ChessfishSetup-0.1.0.exe`
+    (~124 MB). Verified: silent per-user install → Stockfish in `{app}\stockfish\` → frozen selftest → Start-menu shortcut → uninstall
+    (keeps config/games/logs). *User: "Install it".*
