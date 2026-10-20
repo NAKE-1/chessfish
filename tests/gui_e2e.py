@@ -81,6 +81,7 @@ cfg.server_host, cfg.link_port, cfg.games_dir = "127.0.0.1", 16768, str(TMP / "g
 cfg.mode, cfg.host_color, cfg.untimed, cfg.tc_initial_s, cfg.tc_increment_s = MODE, "white", False, 120, 1
 cfg.countdown_s, cfg.grace_s, cfg.min_ms, cfg.max_ms, cfg.threads, cfg.hash_mb = 1, 20, 200, 600, 4, 64
 cfg.elo = 1400
+cfg.dashboard = True
 cfgmod.save_session(None)
 
 os.environ.setdefault("QT_QPA_FONTDIR", "C:/Windows/Fonts")
@@ -118,7 +119,19 @@ def poll():
         win.tabs.setCurrentIndex(0)
         win.grab().save(str(TMP / "live.png"))
         print("live screenshot", TMP / "live.png")
-    if steps["resumed"] and s and s.phase == "LIVE" and len(s.moves) >= 22:
+
+        def shoot():
+            from playwright.sync_api import sync_playwright
+            with sync_playwright() as p:
+                b = p.chromium.launch(channel="msedge")
+                pg = b.new_page(viewport={"width": 1300, "height": 900})
+                pg.goto("http://127.0.0.1:6769/")
+                pg.wait_for_timeout(1500)
+                pg.screenshot(path=str(TMP / "dashboard.png"))
+                b.close()
+            print("dashboard screenshot", TMP / "dashboard.png")
+        shoot()  # blocks the UI briefly; the dashboard serves from its own thread
+    if steps["resumed"] and s and s.phase == "LIVE" and len(s.moves) >= 30:
         win.client.control("resign")
     human_move()
     if (s and s.phase == "ENDED") or el > 150:

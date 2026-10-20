@@ -2,6 +2,7 @@ import random
 import time
 
 import chess
+import chess.svg
 from PySide6.QtCore import QObject, Qt, QTimer, Signal
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (QDockWidget, QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMessageBox,
@@ -9,6 +10,7 @@ from PySide6.QtWidgets import (QDockWidget, QHBoxLayout, QLabel, QLineEdit, QMai
 from chessfish_proto import messages as lm
 from chessfish_proto.crypto import psk_from_text
 
+from ..dashboard.server import Dashboard
 from ..config import Config, load_psk, load_session, save_session
 from ..engine.humanize import humanized_delay
 from ..engine.manager import AnalysisEngine, PlayEngine
@@ -49,12 +51,15 @@ class MainWindow(QMainWindow):
         self.play_token = 0
         self.startup_checked = False
         self.link_error = None
-        self.on_snapshot = None  # dashboard hook: called with the stats dict
+        self.dashboard: Dashboard | None = None
+        self._dash_lan = False
         self._build()
         self._timer = QTimer(self, interval=100, timeout=self._tick)
         self._timer.start()
         self._slow = QTimer(self, interval=700, timeout=self._refresh_record)
         self._slow.start()
+        self._dash_timer = QTimer(self, interval=250, timeout=self._push_dashboard)
+        self.apply_dashboard()
         self.restart_engines()
         self.restart_link()
 
@@ -356,12 +361,30 @@ class MainWindow(QMainWindow):
             engine_mode = self.session and self.session.mode == "engine"
             elo = self.cfg.friend_elo_estimate if friend_turn or not engine_mode else (self.session.engine.elo or self.cfg.elo)
             self.probable_panel.update_moves(self.board, lines, elo, friend_turn)
-        if self.on_snapshot:
-            self.on_snapshot(self.dashboard_payload())
+
+    def apply_dashboard(self):
+        if self.dashboard and (not self.cfg.dashboard or self._dash_lan != self.cfg.dashboard_lan):
+            self.dashboard.stop()
+            self.dashboard = None
+            self._dash_timer.stop()
+        if self.cfg.dashboard and not self.dashboard:
+            self.dashboard, self._dash_lan = Dashboard(self.cfg.dashboard_lan), self.cfg.dashboard_lan
+            self.dashboard.start()
+            self._dash_timer.start()
+            self.log("Dashboard on http://127.0.0.1:6769" + (" (also on the LAN)" if self._dash_lan else ""))
+
+    def _push_dashboard(self):
+        self.dashboard.latest = self.dashboard_payload()
 
     def dashboard_payload(self) -> dict:
         s = self.state
+        arrows = [chess.svg.Arrow(chess.parse_square(a), chess.parse_square(b), color=["#15781B", "#003088", "#882020"][r])
+                  for a, b, r in self.boardw.arrows]
+        last = self.board.peek() if self.board.move_stack else None
+        check = self.board.king(self.board.turn) if self.board.is_check() else None
         return {"fen": self.board.fen(), "phase": s.phase if s else None, "analysis": self.snap,
+                "svg": chess.svg.board(self.board, orientation=self.boardw.orientation, lastmove=last, check=check,
+                                       arrows=arrows, size=480), "phase": s.phase if s else None, "analysis": self.snap,
                 "summary": self.record.summary() if self.record else None,
                 "plies": [{"san": p.san, "think_ms": p.think_ms, "clock_ms": p.clock_ms, **(self.record.ply_stats(i) or {})}
                           for i, p in enumerate(self.record.plies)] if self.record else [],
@@ -481,10 +504,7 @@ class MainWindow(QMainWindow):
             self.restart_engines()
         if old_link != (self.cfg.server_host, self.cfg.link_port, load_psk()):
             self.restart_link()
-        self.settings_changed()
-
-    def settings_changed(self):
-        """Hook for the dashboard toggle (set by __main__)."""
+        self.apply_dashboard()
 
     def closeEvent(self, e):
         if self.client:
@@ -493,4 +513,6 @@ class MainWindow(QMainWindow):
             self.analysis.stop()
         if self.player:
             self.player.quit()
+        if self.dashboard:
+            self.dashboard.stop()
         super().closeEvent(e)
