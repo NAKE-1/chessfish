@@ -110,5 +110,9 @@ Output: `ChessfishSetup-<ver>.exe`, built with **PyInstaller (onedir)** and wrap
 - **Build script** `installer/build.ps1`: downloads the pinned Stockfish release, verifies checksums, runs PyInstaller, runs the Inno Setup compiler.
 
 ## Docker side
-`deploy/docker-compose.yml` publishes `6767:6767` (friend site) and `6768:6768` (link). `.env` holds `CHESSFISH_PSK`.
-Start it with `docker compose up -d` on the VM. Nothing on the VM's Tailscale is changed.
+One command on the VM installs or updates the server, building it straight from GitHub:
+```
+curl -fsSL https://raw.githubusercontent.com/NAKE-1/chessfish/main/deploy/install.sh | sh -s -- <pairing-key>
+```
+It writes `~/chessfish/docker-compose.yml` + `.env` (`CHESSFISH_PSK`), publishes 6767/6768, data in volume `chessfish-data`.
+Nothing on the VM's Tailscale is changed.
