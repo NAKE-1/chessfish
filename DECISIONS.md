@@ -55,3 +55,8 @@ Format: date — decision — why / source.
 25. **Dev Python = 3.13** (already installed) instead of installing 3.12; the container still uses `python:3.12-slim`. *Claude, to avoid installing software.*
 26. **WELCOME echoes `nonce_c`** inside its MAC, binding it to the HELLO. Added an `EVENT {kind, detail}` link message (friend joined/left, draw offered, move rejected) and `resign` as a host CONTROL (human mode). *Claude design.*
 27. **Docker steps deferred** — user: "docker steps come a bit later". Build server/host/website first; Dockerfile + compose come after.
+28. **Sounds are synthesized WAVs** (`tools/make_sounds.py`, stdlib only) instead of mp3/ogg: no encoder needed, every browser plays WAV. *Claude.*
+29. **chessground 9.2.1** vendored from npm with its GPL-3.0 LICENSE (`server/web/vendor/chessground/`), brown board + cburnett pieces (both inline data URIs, no CDN). *Claude.*
+30. **One friend connection at a time:** a newer tab/device replaces the old one; the old page gets close code 4001 and shows "open in another tab" instead of reconnecting. *Claude.*
+31. **Friend banner `paused`** added for a host-initiated pause (same in both modes). The friend's ping carries its last RTT so the host sees the friend leg (`NET`). *Claude.*
+32. **Server skips its own pings to the host:** host PINGs → server PONGs; each side detects silence by read timeout (8 s). *Claude, simplification.*

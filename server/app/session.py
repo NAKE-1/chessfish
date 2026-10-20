@@ -191,7 +191,7 @@ class Session:
     async def friend_connected(self, conn, name: str):
         old, self.friend, self.friend_name = self.friend, conn, name
         if old:
-            await old.close()
+            await old.close(4001)  # page shows "open in another tab" and stops reconnecting
         await self.to_host(lm.Event(kind="friend_joined", detail=name))
         await self.to_host(lm.Net(friend_connected=True))
         if self.phase == "PAUSED":

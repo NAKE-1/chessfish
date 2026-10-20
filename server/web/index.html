@@ -1,1 +1,57 @@
-<!doctype html><title>Chessfish</title>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chess</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="vendor/chessground/chessground.base.css">
+<link rel="stylesheet" href="vendor/chessground/chessground.brown.css">
+<link rel="stylesheet" href="vendor/chessground/chessground.cburnett.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<form id="name-screen" class="screen" autocomplete="off">
+  <h1>Chess</h1>
+  <label for="name">Your name</label>
+  <input id="name" maxlength="24" required autofocus>
+  <button type="submit">Join</button>
+</form>
+
+<main id="main" class="screen" hidden>
+  <section class="board-col">
+    <div class="player top"><span class="pname" id="top-name">Opponent</span><span class="clock" id="top-clock">–</span></div>
+    <div class="board-wrap">
+      <div id="board" class="cg-wrap"></div>
+      <div id="overlay" class="overlay"><div id="overlay-text">Connecting…</div></div>
+      <div id="promo" class="promo cg-wrap" hidden></div>
+    </div>
+    <div class="player bottom"><span class="pname" id="bottom-name">You</span><span class="clock" id="bottom-clock">–</span></div>
+  </section>
+
+  <aside class="side">
+    <div class="status-row">
+      <span id="ping" class="ping">— ms</span>
+      <button id="mute" type="button" title="Sound on/off">🔊</button>
+      <button id="flip" type="button" title="Flip board">⇅</button>
+    </div>
+    <div id="banner" class="banner" hidden></div>
+    <div id="result" class="result" hidden></div>
+    <ol id="moves" class="moves"></ol>
+    <div class="actions">
+      <button id="draw" type="button">Offer draw</button>
+      <button id="resign" type="button">Resign</button>
+    </div>
+    <div class="chat">
+      <div id="chat-log" class="chat-log" aria-live="polite"></div>
+      <form id="chat-form" autocomplete="off">
+        <input id="chat-input" maxlength="300" placeholder="Say something…" aria-label="Chat message">
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  </aside>
+</main>
+<div id="toast" class="toast" hidden></div>
+<script type="module" src="app.js"></script>
+</body>
+</html>

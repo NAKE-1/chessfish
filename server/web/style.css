@@ -1,0 +1,65 @@
+:root {
+  --bg: #1d1f21; --panel: #26292c; --line: #383c40; --text: #e6e6e6; --muted: #9aa0a6;
+  --accent: #6aa84f; --warn: #e0a030; --bad: #d9534f; --clock-active: #3d6b2f;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--bg); color: var(--text); font: 15px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+button, input { font: inherit; color: inherit; }
+button { background: var(--line); border: 0; border-radius: 6px; padding: 8px 12px; cursor: pointer; }
+button:hover:not(:disabled) { filter: brightness(1.2); }
+button:disabled { opacity: .45; cursor: default; }
+input { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; min-width: 0; }
+[hidden] { display: none !important; }
+
+#name-screen { max-width: 320px; margin: 18vh auto 0; padding: 0 16px; display: flex; flex-direction: column; gap: 10px; }
+#name-screen h1 { margin: 0 0 8px; font-weight: 600; }
+#name-screen button { background: var(--accent); color: #fff; }
+
+#main { display: flex; gap: 20px; justify-content: center; align-items: flex-start; padding: 16px; }
+.board-col { width: min(80vh, 92vw, 720px); flex: none; }
+.board-wrap { position: relative; width: 100%; aspect-ratio: 1; }
+#board { width: 100%; height: 100%; }
+.player { display: flex; justify-content: space-between; align-items: center; padding: 6px 2px; }
+.pname { font-weight: 600; }
+.clock { font: 600 22px/1 ui-monospace, Consolas, monospace; background: var(--panel); padding: 6px 10px; border-radius: 6px; min-width: 96px; text-align: right; }
+.clock.active { background: var(--clock-active); }
+.clock.low { color: #ffb3b0; }
+
+.overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.55); z-index: 5; text-align: center; font-size: 26px; font-weight: 600; }
+.overlay .big { font-size: 96px; display: block; }
+.promo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(0,0,0,.5); z-index: 6; }
+.promo button { width: 22%; aspect-ratio: 1; background: #f0d9b5 center/80% no-repeat; border-radius: 8px; }
+
+.side { width: 320px; display: flex; flex-direction: column; gap: 10px; }
+.status-row { display: flex; gap: 8px; align-items: center; }
+.status-row button { padding: 6px 10px; }
+.ping { flex: 1; font-variant-numeric: tabular-nums; color: var(--muted); }
+.ping::before { content: "●"; margin-right: 6px; }
+.ping.ok::before { color: var(--accent); } .ping.warn::before { color: var(--warn); } .ping.bad::before { color: var(--bad); }
+.banner { background: var(--warn); color: #222; padding: 8px 10px; border-radius: 6px; font-weight: 600; }
+.result { background: var(--panel); border: 1px solid var(--line); padding: 10px; border-radius: 6px; text-align: center; font-weight: 600; }
+.moves { background: var(--panel); border-radius: 6px; margin: 0; padding: 8px 8px 8px 40px; height: 180px; overflow-y: auto; font-variant-numeric: tabular-nums; }
+.moves li { padding: 1px 0; }
+.moves li span { display: inline-block; width: 70px; }
+.actions { display: flex; gap: 8px; }
+.actions button { flex: 1; }
+#resign.confirm { background: var(--bad); }
+#draw.offered { background: var(--accent); }
+.chat { background: var(--panel); border-radius: 6px; display: flex; flex-direction: column; }
+.chat-log { height: 160px; overflow-y: auto; padding: 8px; word-wrap: break-word; }
+.chat-log .from { font-weight: 600; margin-right: 4px; }
+.chat-log .sys { color: var(--muted); font-style: italic; }
+#chat-form { display: flex; gap: 6px; padding: 6px; border-top: 1px solid var(--line); }
+#chat-input { flex: 1; }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--bad); color: #fff; padding: 8px 14px; border-radius: 6px; z-index: 10; }
+
+@media (max-width: 900px) {
+  #main { flex-direction: column; align-items: center; padding: 8px 16px; gap: 12px; }
+  .board-col { width: min(92vw, 70vh); }
+  .side { width: min(92vw, 70vh); }
+  .moves { height: 110px; }
+  .chat-log { height: 120px; }
+}
+.promo piece { position: static; display: block; width: 100%; height: 100%; background-size: cover; }

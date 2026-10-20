@@ -20,9 +20,9 @@ class FriendConn:
         except Exception:
             pass
 
-    async def close(self):
+    async def close(self, code: int = 1000):
         try:
-            await self.ws.close()
+            await self.ws.close(code)
         except Exception:
             pass
 
