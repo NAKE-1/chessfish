@@ -74,3 +74,12 @@ Format: date — decision — why / source.
 39. **Inno Setup 6 installed via winget** (user approved). `installer\build.ps1` now produces `build\installer\ChessfishSetup-0.1.0.exe`
     (~124 MB). Verified: silent per-user install → Stockfish in `{app}\stockfish\` → frozen selftest → Start-menu shortcut → uninstall
     (keeps config/games/logs). *User: "Install it".*
+
+## 2026-10-20 — Docker
+40. **Public GitHub repo `NAKE-1/chessfish`** (user: public). No secrets in it; commits use the GitHub noreply address.
+41. **One-command server install/update** on the VM: `curl -fsSL https://raw.githubusercontent.com/NAKE-1/chessfish/main/deploy/install.sh | sh -s -- <pairing-key>`.
+    It fetches `deploy/docker-compose.yml`, writes `~/chessfish/.env` (chmod 600), and `docker compose up -d --build` builds the image
+    **straight from the GitHub repo** (build context = git URL, `server/Dockerfile`). No key given → keeps the existing one, or generates
+    and prints a new one. Re-running = update. This answers the ".tar vs build context" question: build from GitHub. *User request.*
+42. Data lives in a **named volume** `chessfish-data` (not a bind mount), so the non-root container user can write to it.
+43. The wizard's pairing-key page shows that command with the key filled in (+ copy button), replacing the planned "write Docker files" page.
