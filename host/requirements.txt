@@ -1,0 +1,16 @@
+chess==1.11.2
+cryptography==50.0.2
+fastapi==0.156.0
+httptools==0.9.0
+keyring==25.7.0
+numpy==2.5.4
+psutil==7.2.2
+pydantic==2.14.1
+pyqtgraph==0.14.0
+PySide6==6.12.0
+PySide6_Addons==6.12.0
+PySide6_Essentials==6.12.0
+shiboken6==6.12.0
+tomli_w==1.2.0
+uvicorn==0.54.0
+websockets==17.3

@@ -60,3 +60,12 @@ Format: date — decision — why / source.
 30. **One friend connection at a time:** a newer tab/device replaces the old one; the old page gets close code 4001 and shows "open in another tab" instead of reconnecting. *Claude.*
 31. **Friend banner `paused`** added for a host-initiated pause (same in both modes). The friend's ping carries its last RTT so the host sees the friend leg (`NET`). *Claude.*
 32. **Server skips its own pings to the host:** host PINGs → server PONGs; each side detects silence by read timeout (8 s). *Claude, simplification.*
+33. **Stockfish 19 "universal" Windows build** is bundled instead of 6 per-CPU builds: the official release now ships one
+    `stockfish-windows-x86-64-universal.exe` that picks avx512/bmi2/avx2/... itself. `cpu_select.py` is dropped; the wizard
+    just runs `bench` to verify and shows NPS. Same goal as decision 16 (works on any CPU, auto-picked), less to ship. *Claude.*
+34. **py-cpuinfo dropped** (not needed with the universal build); psutil gives cores/RAM. *Claude.*
+35. **Wizard order:** Stockfish → Hardware → Pairing key → Server (+Test connection). The key page comes before the test,
+    because the test needs the key. The Docker-files page is deferred with the other Docker steps (decision 27). *Claude.*
+36. **Engine-mode draw offers** are answered automatically after 2–6 s: accept only from move 15 on and when the engine is not
+    better (host-POV eval ≤ +0.30). Human mode shows the host a Yes/No prompt. *Claude.*
+37. **Threat** = depth-10 search with the side to move "passing" (turn flipped, not a null move in history). *Claude.*

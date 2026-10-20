@@ -1,0 +1,18 @@
+QWidget { background: #1e1f22; color: #dcdcdc; font-family: "Segoe UI"; font-size: 10pt; }
+QToolBar { border: 0; spacing: 4px; padding: 4px; background: #26282c; }
+QToolButton { padding: 5px 10px; border-radius: 4px; }
+QToolButton:hover { background: #34373c; }
+QToolButton:disabled { color: #666; }
+QTabWidget::pane { border: 1px solid #34373c; }
+QTabBar::tab { padding: 6px 14px; background: #26282c; border: 0; }
+QTabBar::tab:selected { background: #34373c; }
+QTableWidget { gridline-color: #2c2e33; background: #1b1c1f; alternate-background-color: #222327; }
+QHeaderView::section { background: #26282c; padding: 4px; border: 0; border-right: 1px solid #34373c; }
+QLineEdit, QSpinBox, QComboBox, QPlainTextEdit { background: #16171a; border: 1px solid #34373c; border-radius: 4px; padding: 4px; }
+QPushButton { background: #34373c; border: 0; border-radius: 4px; padding: 6px 12px; }
+QPushButton:hover { background: #41454b; }
+QLabel#clock { font: 600 20pt "Consolas"; background: #26282c; padding: 2px 10px; border-radius: 4px; }
+QLabel#clock[active="true"] { background: #3d6b2f; }
+QLabel#player { font-weight: 600; font-size: 11pt; }
+QDockWidget::title { padding: 4px; background: #26282c; }
+QStatusBar { background: #26282c; }
