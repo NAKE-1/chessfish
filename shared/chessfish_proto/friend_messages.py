@@ -39,6 +39,7 @@ class ChatIn(_M):
 class PingIn(_M):
     t: Literal["ping"]
     id: int
+    rtt: Optional[float] = None  # browser's last measured RTT, forwarded to the host as NET
 
 
 FriendIn = Annotated[Union[Hello, Move, Resign, DrawOffer, DrawAccept, ChatIn, PingIn], Field(discriminator="t")]
@@ -90,7 +91,7 @@ class GameOver(_M):
 
 class Banner(_M):
     t: Literal["banner"] = "banner"
-    kind: Optional[Literal["opponent_reconnecting", "adjourned"]]
+    kind: Optional[Literal["opponent_reconnecting", "paused", "adjourned"]]
     seconds_left: Optional[int] = None
 
 
