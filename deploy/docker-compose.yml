@@ -1,0 +1,18 @@
+# Builds chessfish-server straight from GitHub. Used by deploy/install.sh; .env holds CHESSFISH_PSK.
+services:
+  chessfish-server:
+    build:
+      context: ${CHESSFISH_GIT:-https://github.com/NAKE-1/chessfish.git#main}
+      dockerfile: server/Dockerfile
+    image: chessfish-server:latest
+    container_name: chessfish-server
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "6767:6767"   # friend website
+      - "6768:6768"   # host link (encrypted, pairing key required)
+    volumes:
+      - chessfish-data:/data   # only an adjourned game is ever stored
+
+volumes:
+  chessfish-data:

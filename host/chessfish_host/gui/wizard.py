@@ -6,13 +6,15 @@ import time
 
 import psutil
 from PySide6.QtCore import QObject, QProcess, Signal
-from PySide6.QtWidgets import (QFormLayout, QLabel, QLineEdit, QPushButton, QSpinBox, QVBoxLayout, QWizard,
+from PySide6.QtWidgets import (QApplication, QFormLayout, QLabel, QLineEdit, QPushButton, QSpinBox, QVBoxLayout, QWizard,
                                QWizardPage)
 from chessfish_proto.crypto import psk_from_text
 from chessfish_proto.link_socket import HandshakeError, dial
 
 from ..config import Config
 from .dialogs import PairingWidget
+
+INSTALL_URL = "https://raw.githubusercontent.com/NAKE-1/chessfish/main/deploy/install.sh"
 
 
 def default_hash_mb() -> int:
@@ -98,6 +100,18 @@ class KeyPage(QWizardPage):
         self.pair.edit.textChanged.connect(self.completeChanged)
         lay.addWidget(self.pair)
         lay.addWidget(QLabel("It is stored in Windows Credential Manager, never in a plain file."))
+        lay.addWidget(QLabel("<b>On the Docker VM</b>, run this once to install (or update) the server with this key:"))
+        self.cmd = QLineEdit(readOnly=True)
+        copy = QPushButton("Copy command")
+        copy.clicked.connect(lambda: QApplication.clipboard().setText(self.cmd.text()))
+        lay.addWidget(self.cmd)
+        lay.addWidget(copy)
+        self.pair.edit.textChanged.connect(self._cmd)
+        self._cmd()
+
+    def _cmd(self):
+        key = self.pair.edit.text().strip() if self.pair.valid() else "<pairing-key>"
+        self.cmd.setText(f"curl -fsSL {INSTALL_URL} | sh -s -- {key}")
 
     def isComplete(self):
         return self.pair.valid()
